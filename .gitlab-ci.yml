@@ -1,0 +1,21 @@
+variables:
+     PROJECT_NAME: exchange_sdk
+     NEXUS_PYPI_USERNAME: "gitlab-poetry"
+     NEXUS_PYPI_PASSWORD: "zk4HkXfBLm8iDiK"
+stages:
+     - test
+build-exchange-sdk-dev:
+  tags:
+    - dev-runner
+  stage: test
+  image:
+    name: 172.18.10.100:4040/python-postgres
+  script:
+    # - poetry source add --default foo http://172.18.10.100:8081/repository/pypi-internal/
+    - poetry config repositories.local http://172.18.10.100:8081/repository/pypi-internal/
+    - poetry install
+    - poetry build
+    - poetry publish --repository local -u ${NEXUS_PYPI_USERNAME} -p ${NEXUS_PYPI_PASSWORD}
+  only:
+    refs:
+      - test
